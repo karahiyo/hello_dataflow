@@ -35,3 +35,14 @@ $ python src/bigquery_schema.py \
   --runner DataflowRunner \
   --project $PROJECT \
 ```
+
+## Example: streaming wordcount
+
+```
+$ python src/streaming_wordcount.py \
+  --project $PROJECT \
+  --region $REGION \
+  --runner DataflowRunner \
+  --input_topic projects/<project>/topics/<input_topic> \
+  --output_topic projects/<project>/topics/<output_topic>
+```
