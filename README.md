@@ -21,7 +21,17 @@ export GOOGLE_APPLICATION_CREDENTIALS=...
 
 ## Example: schema test
 
+using DirectRunner
 ```sh
-python src/bigquery_schema.py --output <PROJECT_ID:DATASET_NAME.TABLE_NAME>
+$ python src/bigquery_schema.py --output <PROJECT_ID:DATASET_NAME.TABLE_NAME>
 ```
 
+using DataflowRunner
+
+```sh
+$ python src/bigquery_schema.py \
+  --region $REGION \
+  --output <PROJECT_ID:DATASET_NAME.TABLE_NAME> \
+  --runner DataflowRunner \
+  --project $PROJECT \
+```
