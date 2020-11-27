@@ -33,7 +33,7 @@ $ python src/bigquery_schema.py \
   --region $REGION \
   --output <PROJECT_ID:DATASET_NAME.TABLE_NAME> \
   --runner DataflowRunner \
-  --project $PROJECT \
+  --project $PROJECT
 ```
 
 ## Example: streaming wordcount
@@ -46,3 +46,15 @@ $ python src/streaming_wordcount.py \
   --input_topic projects/<project>/topics/<input_topic> \
   --output_topic projects/<project>/topics/<output_topic>
 ```
+
+## Example: tagged output
+
+![image](https://user-images.githubusercontent.com/1106556/100439053-59139900-30e6-11eb-95a3-8e2c076499cd.png)
+
+```sh
+$ python ./src/tagged_output.py \
+  --output $OUTPUT_PATH \
+  --project $PROJECT \
+  --runner DataflowRunner
+```
+
