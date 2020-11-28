@@ -4,14 +4,14 @@ import logging
 import apache_beam as beam
 
 
-def by_duration(plant, num_partitions):
-  return durations.index(plant['duration'])
-
 def run(argv=None):
     parser = argparse.ArgumentParser()
     known_args, pipeline_args = parser.parse_known_args(argv)
 
     durations = ['annual', 'biennial', 'perennial']
+
+    def by_duration(plant, num_partitions):
+        return durations.index(plant['duration'])
 
     with beam.Pipeline(argv=pipeline_args) as pipeline:
         annuals, biennials, perennials = (
