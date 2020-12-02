@@ -21,7 +21,20 @@ class CategorizeFn(beam.DoFn):
       elif element.startswith("C"):
           yield pvalue.TaggedOutput("C", element)
       else:
-          yield element
+          yield None
+
+      yield element
+
+
+class AddSuffix(beam.PTransform):
+    def __init__(self, label):
+        super(AddSuffix, self).__init__(label=label)
+
+    def expand(self, pcoll):
+
+        print("--------------")
+        return pcoll | f'Print {self.label}' >> beam.Map(lambda x: f"{x}--------------------------")
+
 
 
 def run(argv=None, save_main_session=True):
@@ -38,10 +51,21 @@ def run(argv=None, save_main_session=True):
         lines
         | beam.ParDo(CategorizeFn()).with_outputs())
 
-    for tag in CategorizeFn.TAGS:
-        tagged_result[tag] | f'[{tag}] Print' >> beam.Map(
-                lambda x: print(f"[{tag}] {x}"))
-    print("hu-n")
+
+    # all_tags = (p | beam.Create(CategorizeFn.TAGS))
+    # print(type(tagged_result))
+    # print(p.applied_labels)
+    # print(tagged_result.tag)
+
+    for t in CategorizeFn.TAGS:
+        AddSuffix(label=f"add suffix {t}").expand(tagged_result[t]) | f'Print {t}' >> beam.Map(lambda x: print(x))
+
+    #for t, pcoll in tagged_result:
+    #    print(t)
+    #    pcoll | '{t} run' >> beam.Map(print)
+
+    #tagged_result[tag] | f'[{tag}] Print' >> beam.Map(
+    #            lambda x: print(f"[{tag}] {x}"))
 
 if __name__ == '__main__':
   logging.getLogger().setLevel(logging.INFO)
