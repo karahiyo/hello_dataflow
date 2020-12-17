@@ -10,7 +10,6 @@ def run(argv=None):
     parser = argparse.ArgumentParser()
     parser.add_argument(
             '--subscription',
-            dest='subscription',
             help='Pub/Sub pull subscription',
             required=True,
             type=str
@@ -18,7 +17,6 @@ def run(argv=None):
 
     parser.add_argument(
             '--output_table',
-            dest='tableId',
             help=(
                 'Output BigQuery table for results specified as: '
                 'PROJECT:DATASET.TABLE or DATASET.TABLE.'),
@@ -31,7 +29,7 @@ def run(argv=None):
     with beam.Pipeline(argv=pipeline_args) as p:
         (p 
                 | "Read input from PubSub" >>
-                beam.io.gcp.pubsub.ReadFromPubSub(subscription=options.subscription) 
+                beam.io.gcp.pubsub.ReadFromPubSub(subscription=known_args.subscription) 
                 | "Decode" >> beam.Map(lambda x: x.decode('utf-8'))
                 | "Parse json" >> beam.Map(json.loads)
                 | "File load to BigQuery" >> beam.io.gcp.bigquery.WriteToBigQuery(
