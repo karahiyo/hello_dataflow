@@ -46,5 +46,5 @@ def run(argv=None):
 
 if __name__ == '__main__':
     print("Streaming Pub/Sub messages to BigQuery...")
-    logging.getLogger().setLevel(logging.DEBUG)
+    logging.getLogger().setLevel(logging.INFO)
     run()

@@ -58,3 +58,18 @@ $ python ./src/tagged_output.py \
   --runner DataflowRunner
 ```
 
+## Example: pubsub_stream_to_bigquery.py
+
+```
+$ python src/pubsub_stream_to_bigquery.py \
+  --subscription "projects/{PROJECT_ID}/subscriptions/{SUBSCRIPTION_ID}" \
+  --output_table {PROJECT_ID}:{DATASET_ID}.{TABLE_ID} \
+  --temp_location gs://{GCS_LOCATION}/ \
+  --runner DataflowRunner \
+  --project {PROJECT_ID} \
+  --experiments=disable_runner_v2 \
+  --experiments=disable_streaming_engine \
+  --experiments=allow_non_updatable_job
+```
+
+
