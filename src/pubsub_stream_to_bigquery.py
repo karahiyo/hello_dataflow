@@ -1,10 +1,6 @@
-from __future__ import absolute_import
 import json
 import apache_beam as beam
 from apache_beam.options.pipeline_options import PipelineOptions
-
-import apache_beam.transforms.window as window
-import apache_beam.transforms.trigger as trigger
 
 
 # Parses messages from Pubsub client
@@ -12,7 +8,6 @@ class ParseTweets(beam.DoFn):
     def process(self, element):
         tweet = json.loads(element.decode('utf-8'))
         yield tweet
-
 
 def run(argv=None):
     class MyOptions(PipelineOptions):
@@ -56,8 +51,6 @@ def run(argv=None):
                 | "Read input from PubSub" >>
                 beam.io.gcp.pubsub.ReadFromPubSub(subscription=options.subscription) 
                 | "Parse tweet" >> beam.ParDo(ParseTweets())
-                | 'Windowing' >> beam.WindowInto(window.FixedWindows(1 * 60),
-                    accumulation_mode=trigger.AccumulationMode.DISCARDING)
                 | "File load to BigQuery" >> beam.io.gcp.bigquery.WriteToBigQuery(
                     project=options.projectId,
                     dataset=options.datasetId,
