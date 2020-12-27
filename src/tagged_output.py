@@ -1,35 +1,3 @@
-"""
-https://github.com/apache/beam/blob/master/sdks/python/apache_beam/examples/cookbook/multiple_output_pardo.py
-
-A workflow demonstrating a DoFn with multiple outputs.
-DoFns may produce multiple outputs. Outputs that are not the default ("main")
-output are marked with a tag at output time and later the same tag will be used
-to get the corresponding result (a PCollection) for that output.
-This is a slightly modified version of the basic wordcount example. In this
-example words are divided into 2 buckets as shorts words (3 characters in length
-or less) and words (all other words). There will be 3 output files:::
-  [OUTPUT]-chars        :   Character count for the input.
-  [OUTPUT]-short-words  :   Word count for short words only.
-  [OUTPUT]-words        :   Word count for all other words.
-To execute this pipeline locally, specify a local output file or output prefix
-on GCS:::
-  --output [YOUR_LOCAL_FILE | gs://YOUR_OUTPUT_PREFIX]
-To execute this pipeline using the Google Cloud Dataflow service, specify
-pipeline configuration:::
-  --project YOUR_PROJECT_ID
-  --region GCE_REGION
-  --staging_location gs://YOUR_STAGING_DIRECTORY
-  --temp_location gs://YOUR_TEMP_DIRECTORY
-  --job_name YOUR_JOB_NAME
-  --runner DataflowRunner
-and an output prefix on GCS:::
-  --output gs://YOUR_OUTPUT_PREFIX
-"""
-
-# pytype: skip-file
-
-from __future__ import absolute_import
-
 import argparse
 import logging
 import re
@@ -38,6 +6,7 @@ import apache_beam as beam
 from apache_beam import pvalue
 from apache_beam.io import ReadFromText
 from apache_beam.io import WriteToText
+from apache_beam.metrics import Metrics
 from apache_beam.options.pipeline_options import PipelineOptions
 from apache_beam.options.pipeline_options import SetupOptions
 
@@ -53,6 +22,11 @@ class SplitLinesToWordsFn(beam.DoFn):
   # These tags will be used to tag the outputs of this DoFn.
   OUTPUT_TAG_SHORT_WORDS = 'tag_short_words'
   OUTPUT_TAG_CHARACTER_COUNT = 'tag_character_count'
+
+  def __init__(self, *unused_args, **unused_kwargs):
+    super(SplitLinesToWordsFn, self).__init__(*unused_args, **unused_kwargs)
+    self.long_words_counter = Metrics.counter(self.__class__, 'long_words_count')
+    self.short_words_counter = Metrics.counter(self.__class__, 'short_words_count')
 
   def process(self, element):
     """Receives a single element (a line) and produces words and character
@@ -79,9 +53,11 @@ class SplitLinesToWordsFn(beam.DoFn):
       if len(word) <= 3:
         # yield word as an output to the OUTPUT_TAG_SHORT_WORDS tagged
         # collection.
+        self.short_words_counter.inc()
         yield pvalue.TaggedOutput(self.OUTPUT_TAG_SHORT_WORDS, word)
       else:
         # yield word to add it to the main collection.
+        self.long_words_counter.inc()
         yield word
 
 

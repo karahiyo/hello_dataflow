@@ -53,9 +53,10 @@ $ python src/streaming_wordcount.py \
 
 ```sh
 $ python ./src/tagged_output.py \
-  --output $OUTPUT_PATH \
+  --output $GCS_OUTPUT_PATH \
   --project $PROJECT \
-  --runner DataflowRunner
+  --runner DataflowRunner \
+  --temp_location $GCS_TEMP_LOCATION
 ```
 
 ## Example: pubsub_stream_to_bigquery.py
