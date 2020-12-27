@@ -24,7 +24,6 @@ class SplitLinesToWordsFn(beam.DoFn):
   OUTPUT_TAG_CHARACTER_COUNT = 'tag_character_count'
 
   def __init__(self, *unused_args, **unused_kwargs):
-    super(SplitLinesToWordsFn, self).__init__(*unused_args, **unused_kwargs)
     self.long_words_counter = Metrics.counter(self.__class__, 'long_words_count')
     self.short_words_counter = Metrics.counter(self.__class__, 'short_words_count')
 
