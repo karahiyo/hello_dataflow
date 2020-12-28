@@ -1,5 +1,6 @@
 import argparse
 import logging
+import re
 
 import apache_beam as beam
 from apache_beam.metrics import Metrics
@@ -16,12 +17,18 @@ class WordLengthMonitorDoFn(beam.DoFn):
         self.words_length_monitor = Metrics.distribution(self.__class__, 'length')
 
     def process(self, element: str, *args, **kwargs):
-        self.words_length_monitor.update(len(element))
-        if len(element) <= 3:
-            self.short_words_counter.inc()
-        else:
-            self.long_words_counter.inc()
-        return element
+        text_line = element.strip()
+        if not text_line:
+            yield
+
+        words = re.findall(r'[\w\']+', text_line, re.UNICODE)
+        for w in words:
+            self.words_length_monitor.update(len(w))
+            if len(w) <= 3:
+                self.short_words_counter.inc()
+            else:
+                self.long_words_counter.inc()
+        return words
 
 
 def run(argv=None):
