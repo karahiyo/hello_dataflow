@@ -1,28 +1,3 @@
-# ref https://github.com/apache/beam/blob/70fcd57942b90345c1614839a64b506b392c5a67/sdks/python/apache_beam/examples/streaming_wordcount.py
-#
-# Licensed to the Apache Software Foundation (ASF) under one or more
-# contributor license agreements.  See the NOTICE file distributed with
-# this work for additional information regarding copyright ownership.
-# The ASF licenses this file to You under the Apache License, Version 2.0
-# (the "License"); you may not use this file except in compliance with
-# the License.  You may obtain a copy of the License at
-#
-#    http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-#
-
-"""A streaming word-counting workflow.
-"""
-
-# pytype: skip-file
-
-from __future__ import absolute_import
-
 import argparse
 import logging
 
@@ -30,45 +5,11 @@ from past.builtins import unicode
 
 import apache_beam as beam
 import apache_beam.transforms.window as window
-# from apache_beam.examples.wordcount_with_metrics import WordExtractingDoFn
-from apache_beam.metrics import Metrics
 from apache_beam.options.pipeline_options import PipelineOptions
 from apache_beam.options.pipeline_options import SetupOptions
 from apache_beam.options.pipeline_options import StandardOptions
 
-
-class WordExtractingDoFn(beam.DoFn):
-  """Parse each line of input text into words."""
-  def __init__(self):
-    # TODO(BEAM-6158): Revert the workaround once we can pickle super() on py3.
-    # super(WordExtractingDoFn, self).__init__()
-    beam.DoFn.__init__(self)
-    self.words_counter = Metrics.counter(self.__class__, 'words')
-    self.word_lengths_counter = Metrics.counter(self.__class__, 'word_lengths')
-    self.word_lengths_dist = Metrics.distribution(
-        self.__class__, 'word_len_dist')
-    self.empty_line_counter = Metrics.counter(self.__class__, 'empty_lines')
-
-  def process(self, element):
-    """Returns an iterator over the words of this element.
-
-    The element is a line of text.  If the line is blank, note that, too.
-
-    Args:
-      element: the element being processed
-
-    Returns:
-      The processed element.
-    """
-    text_line = element.strip()
-    if not text_line:
-      self.empty_line_counter.inc(1)
-    words = re.findall(r'[\w\']+', text_line, re.UNICODE)
-    for w in words:
-      self.words_counter.inc()
-      self.word_lengths_counter.inc(len(w))
-      self.word_lengths_dist.update(len(w))
-    return words
+from hello_dataflow.examples.wordcount_with_metrics import WordExtractingDoFn
 
 
 def run(argv=None, save_main_session=True):
