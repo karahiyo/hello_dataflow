@@ -8,10 +8,19 @@ from apache_beam.options.pipeline_options import SetupOptions, PipelineOptions, 
 
 class WordLengthMonitorDoFn(beam.DoFn):
     def __init__(self):
+        # TODO(BEAM-6158): Revert the workaround once we can pickle super() on py3.
+        # super(WordLengthMonitorDoFn, self).__init__()
+        beam.DoFn.__init__(self)
+        self.short_words_counter = Metrics.counter(self.__class__, 'short_words_count')
+        self.long_words_counter = Metrics.counter(self.__class__, 'long_words_count')
         self.words_length_monitor = Metrics.distribution(self.__class__, 'length')
 
     def process(self, element: str, *args, **kwargs):
         self.words_length_monitor.update(len(element))
+        if len(element) <= 3:
+            self.short_words_counter.inc()
+        else:
+            self.long_words_counter.inc()
         return element
 
 
