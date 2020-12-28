@@ -44,7 +44,11 @@ $ python src/streaming_wordcount.py \
   --region $REGION \
   --runner DataflowRunner \
   --input_topic projects/<project>/topics/<input_topic> \
-  --output_topic projects/<project>/topics/<output_topic>
+  --output_topic projects/<project>/topics/<output_topic> \
+  --experiments=disable_runner_v2 \
+  --experiments=disable_streaming_engine \
+  --experiments=allow_non_updatable_job \
+  --setup_file ./setup.py
 ```
 
 ## Example: tagged output
