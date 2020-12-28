@@ -44,7 +44,11 @@ $ python src/streaming_wordcount.py \
   --region $REGION \
   --runner DataflowRunner \
   --input_topic projects/<project>/topics/<input_topic> \
-  --output_topic projects/<project>/topics/<output_topic>
+  --output_topic projects/<project>/topics/<output_topic> \
+  --experiments=disable_runner_v2 \
+  --experiments=disable_streaming_engine \
+  --experiments=allow_non_updatable_job \
+  --setup_file ./setup.py
 ```
 
 ## Example: tagged output
@@ -53,9 +57,10 @@ $ python src/streaming_wordcount.py \
 
 ```sh
 $ python ./src/tagged_output.py \
-  --output $OUTPUT_PATH \
+  --output $GCS_OUTPUT_PATH \
   --project $PROJECT \
-  --runner DataflowRunner
+  --runner DataflowRunner \
+  --temp_location $GCS_TEMP_LOCATION
 ```
 
 ## Example: pubsub_stream_to_bigquery.py
