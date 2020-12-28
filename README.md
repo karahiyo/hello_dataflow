@@ -48,7 +48,8 @@ $ python src/streaming_wordcount.py \
   --experiments=disable_runner_v2 \
   --experiments=disable_streaming_engine \
   --experiments=allow_non_updatable_job \
-  --setup_file ./setup.py
+  --setup_file ./setup.py \
+  --requirements_file ./requirements.txt
 ```
 
 ## Example: tagged output
