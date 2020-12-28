@@ -1,6 +1,7 @@
 import argparse
 import logging
 import re
+from typing import Iterable
 
 import apache_beam as beam
 from apache_beam.metrics import Metrics
@@ -16,10 +17,10 @@ class WordLengthMonitorDoFn(beam.DoFn):
         self.long_words_counter = Metrics.counter(self.__class__, 'long_words_count')
         self.words_length_monitor = Metrics.distribution(self.__class__, 'length')
 
-    def process(self, element: str, *args, **kwargs):
+    def process(self, element: str, *args, **kwargs) -> Iterable[str]:
         text_line = element.strip()
         if not text_line:
-            yield
+            return []
 
         words = re.findall(r'[\w\']+', text_line, re.UNICODE)
         for w in words:
