@@ -38,10 +38,7 @@ def run(argv=None):
                     | beam.io.ReadFromPubSub(topic=known_args.input_topic).with_output_types(bytes)
                     | 'Decode' >> beam.Map(lambda x: x.decode('utf-8')))
 
-        output = (
-                messages
-                | '_Monitoring' >> beam.ParDo(WordLengthMonitorDoFn())
-        )
+        messages | '_Monitoring' >> beam.ParDo(WordLengthMonitorDoFn())
 
 
 if __name__ == '__main__':
