@@ -1,4 +1,5 @@
 import argparse
+import logging
 
 import apache_beam as beam
 from apache_beam.metrics import Metrics
@@ -33,3 +34,7 @@ def run(argv=None):
                 | '_Monitoring' >> beam.ParDo(WordLengthMonitorDoFn())
         )
 
+
+if __name__ == '__main__':
+    logging.getLogger().setLevel(logging.INFO)
+    run()
