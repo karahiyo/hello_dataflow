@@ -40,7 +40,7 @@ def run(argv=None):
 
         (messages
          | '_Monitoring' >> beam.ParDo(WordLengthMonitorDoFn())
-         | 'Print' >> beam.Map(print))
+         | 'Print' >> beam.Map(lambda x: logging.info(x)))
 
 
 if __name__ == '__main__':
