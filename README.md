@@ -23,13 +23,13 @@ export GOOGLE_APPLICATION_CREDENTIALS=...
 
 using DirectRunner
 ```sh
-$ python src/bigquery_schema.py --output <PROJECT_ID:DATASET_NAME.TABLE_NAME>
+$ python bigquery_schema.py --output <PROJECT_ID:DATASET_NAME.TABLE_NAME>
 ```
 
 using DataflowRunner
 
 ```sh
-$ python src/bigquery_schema.py \
+$ python bigquery_schema.py \
   --region $REGION \
   --output <PROJECT_ID:DATASET_NAME.TABLE_NAME> \
   --runner DataflowRunner \
@@ -39,17 +39,13 @@ $ python src/bigquery_schema.py \
 ## Example: streaming wordcount
 
 ```
-$ python src/streaming_wordcount.py \
+$ python streaming_wordcount.py \
   --project $PROJECT \
   --region $REGION \
   --runner DataflowRunner \
   --input_topic projects/<project>/topics/<input_topic> \
   --output_topic projects/<project>/topics/<output_topic> \
-  --experiments=disable_runner_v2 \
-  --experiments=disable_streaming_engine \
-  --experiments=allow_non_updatable_job \
-  --setup_file ./setup.py \
-  --requirements_file ./requirements.txt
+  --setup_file ./setup.py
 ```
 
 ## Example: tagged output
@@ -57,7 +53,7 @@ $ python src/streaming_wordcount.py \
 ![image](https://user-images.githubusercontent.com/1106556/100439053-59139900-30e6-11eb-95a3-8e2c076499cd.png)
 
 ```sh
-$ python ./src/tagged_output.py \
+$ python tagged_output.py \
   --output $GCS_OUTPUT_PATH \
   --project $PROJECT \
   --runner DataflowRunner \
@@ -67,7 +63,7 @@ $ python ./src/tagged_output.py \
 ## Example: pubsub_stream_to_bigquery.py
 
 ```
-$ python src/pubsub_stream_to_bigquery.py \
+$ python pubsub_stream_to_bigquery.py \
   --subscription "projects/{PROJECT_ID}/subscriptions/{SUBSCRIPTION_ID}" \
   --output_table {PROJECT_ID}:{DATASET_ID}.{TABLE_ID} \
   --temp_location gs://{GCS_LOCATION}/ \
