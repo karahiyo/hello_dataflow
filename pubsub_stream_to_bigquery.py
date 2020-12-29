@@ -40,7 +40,7 @@ def run(argv=None):
                     method=beam.io.WriteToBigQuery.Method.FILE_LOADS,
                     triggering_frequency=10,
                     write_disposition=beam.io.gcp.bigquery.BigQueryDisposition.WRITE_APPEND,
-                    create_disposition=beam.io.gcp.bigquery.BigQueryDisposition.CREATE_NEVER)
+                    create_disposition=beam.io.BigQueryDisposition.CREATE_IF_NEEDED)
          )
 
 
