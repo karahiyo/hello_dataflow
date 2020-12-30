@@ -4,6 +4,8 @@ import logging
 import apache_beam as beam
 import apache_beam.io.gcp.bigquery
 from apache_beam.options.pipeline_options import PipelineOptions, SetupOptions, StandardOptions
+from apache_beam.transforms.trigger import AccumulationMode, AfterProcessingTime
+from apache_beam.transforms.window import FixedWindows
 
 
 def run(argv=None):
@@ -39,6 +41,7 @@ def run(argv=None):
     table_schema.fields.append(msg_schema)
 
     with beam.Pipeline(options=pipeline_options) as p:
+
         (p
          | "Read input from PubSub" >>
          beam.io.gcp.pubsub.ReadFromPubSub(subscription=known_args.subscription)
