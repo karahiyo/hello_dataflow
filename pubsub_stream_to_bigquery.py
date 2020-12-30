@@ -2,6 +2,7 @@ import argparse
 import json
 import logging
 import apache_beam as beam
+import apache_beam.io.gcp.bigquery
 from apache_beam.options.pipeline_options import PipelineOptions, SetupOptions, StandardOptions
 
 
@@ -29,6 +30,14 @@ def run(argv=None):
     pipeline_options.view_as(SetupOptions).save_main_session = True
     pipeline_options.view_as(StandardOptions).streaming = True
 
+    from apache_beam.io.gcp.internal.clients import bigquery
+    table_schema = bigquery.TableSchema()
+    msg_schema = bigquery.TableFieldSchema()
+    msg_schema.name = "message"
+    msg_schema.type = "string"
+    msg_schema.mode = "nullable"
+    table_schema.fields.append(msg_schema)
+
     with beam.Pipeline(options=pipeline_options) as p:
         (p
          | "Read input from PubSub" >>
@@ -38,6 +47,7 @@ def run(argv=None):
          | "File load to BigQuery" >> beam.io.gcp.bigquery.WriteToBigQuery(
                     table=known_args.output_table,
                     method=beam.io.WriteToBigQuery.Method.FILE_LOADS,
+                    schema=table_schema,
                     triggering_frequency=10,
                     write_disposition=beam.io.gcp.bigquery.BigQueryDisposition.WRITE_APPEND,
                     create_disposition=beam.io.BigQueryDisposition.CREATE_IF_NEEDED)

@@ -23,20 +23,20 @@ def run(argv=None):
     pipeline_options = PipelineOptions(pipeline_args)
     with beam.Pipeline(argv=pipeline_args, options=pipeline_options) as p:
         inputs = (p
-                | beam.Create([
+                  | beam.Create([
                     {'icon': '🍓', 'name': 'Strawberry', 'duration': 'perennial'},
                     {'icon': '🥕', 'name': 'Carrot', 'duration': 'biennial'},
                     {'icon': '🍆', 'name': 'Eggplant', 'duration': 'perennial'},
                     {'icon': '🍅', 'name': 'Tomato', 'duration': 'annual'},
                     {'icon': '🥔', 'name': 'Potato', 'duration': 'perennial'}
-                    ]))
+                  ]))
 
         grouped = (inputs
-                | beam.Map(lambda v: (v.get("duration"), v)) 
-                | beam.GroupByKey())
+                   | beam.Map(lambda v: (v.get("duration"), v))
+                   | beam.GroupByKey())
 
         output = (grouped
-                | beam.Map(lambda x: print(x)))
+                  | beam.Map(lambda x: print(x)))
 
 
 
