@@ -8,8 +8,13 @@ from apache_beam.io.restriction_trackers import OffsetRange, OffsetRestrictionTr
 
 
 class ReadFilesProvider(RestrictionProvider):
+  def __init__(self, split_size):
+    super(ReadFilesProvider, self).__init__()
+    self.split_size = split_size
+
   def initial_restriction(self, element):
     size = os.path.getsize(element)
+    logging.warning(f"{element=}, {size=}")
     return OffsetRange(0, size)
 
   def create_tracker(self, restriction):
@@ -19,7 +24,7 @@ class ReadFilesProvider(RestrictionProvider):
     return restriction.size()
 
   def split(self, file_name, restriction):
-    split_size = 64 * (1 << 5)
+    split_size = self.split_size
     i = restriction.start
     while i < restriction.stop - split_size:
       yield OffsetRange(i, i + split_size)
@@ -28,10 +33,14 @@ class ReadFilesProvider(RestrictionProvider):
 
 
 class ReadFiles(beam.DoFn):
+  def __init__(self, split_size, *unused_args, **unused_kwargs):
+      super().__init__(*unused_args, **unused_kwargs)
+      self.split_size = split_size
+
   def process(
       self,
       element,
-      restriction_tracker=beam.DoFn.RestrictionParam(ReadFilesProvider()),
+      restriction_tracker=beam.DoFn.RestrictionParam(ReadFilesProvider(128)),
       *args,
       **kwargs):
     logging.info(f"{element=}, {restriction_tracker.current_restriction().start=}")
@@ -52,6 +61,26 @@ class ReadFiles(beam.DoFn):
         output_count += 1
         pos += len(line)
 
+  def initial_restriction(self, element):
+    size = os.path.getsize(element)
+    logging.warning(f"{element=}, {size=}")
+    return OffsetRange(0, size)
+
+  def create_tracker(self, restriction):
+    return OffsetRestrictionTracker(restriction)
+
+  def restriction_size(self, element, restriction):
+    return restriction.size()
+
+  def split(self, file_name, restriction):
+    split_size = self.split_size
+    i = restriction.start
+    while i < restriction.stop - split_size:
+      yield OffsetRange(i, i + split_size)
+      i += split_size
+    yield OffsetRange(i, restriction.stop)
+
+
 
 def run(argv=None):
     parser = argparse.ArgumentParser()
@@ -61,7 +90,7 @@ def run(argv=None):
     with beam.Pipeline(argv=pipeline_args) as p:
         (p
         | 'Create1' >> beam.Create(file_names)
-        | 'SDF' >> beam.ParDo(ReadFiles()))
+        | 'SDF' >> beam.ParDo(ReadFiles(split_size=128)))
 
 if __name__ == '__main__':
   logging.getLogger().setLevel(logging.INFO)
