@@ -9,12 +9,12 @@ from apache_beam.options.pipeline_options import SetupOptions
 
 
 class CustomFn(beam.DoFn):
-            def __init__(self, name):
-                self.name = name
+    def __init__(self, name):
+        self.name = name
 
-            def process(self, elem):
-                print(self.name, elem)
-                yield elem
+    def process(self, elem):
+        print(self.name, elem)
+        yield elem
 
 
 def run(argv=None):
